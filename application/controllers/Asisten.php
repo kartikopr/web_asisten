@@ -23,7 +23,8 @@ class Asisten extends CI_Controller {
                 $p_login = $this->db->get_where('tb_user',array('username' => $user, 'password => $pass'))->row();
                 if($p_login->level == 'admin'){
                   redirect('asisten/v_beranda');  
-                }elseif($p_login->level == 'asisten'){
+                }
+                elseif($p_login->level == 'asisten'){
                     redirect('asisten/v_home');
                 }
             }else
@@ -32,6 +33,7 @@ class Asisten extends CI_Controller {
             }                       
         }
     }
+    
     
     public function v_beranda()
     {
