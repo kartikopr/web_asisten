@@ -9,7 +9,9 @@ class Asisten extends CI_Controller {
 
     public function index()
 	{
-		$this->load->view('login');
+        $this->load->view('templates/header');
+        $this->load->view('login');
+        $this->load->view('templates/footer');
 	}
 
     public function ceklogin()
@@ -17,7 +19,7 @@ class Asisten extends CI_Controller {
         if(isset($_POST['login'])){
             $user = $this->input->post('user',true);
             $pass = $this->input->post('pwd',true);
-            $cek = $this->asisten_model->proseslogin($user,$pass);
+            $cek =  $this->asisten_model->proseslogin($user,$pass);
             $hasil = count($cek);
             if($hasil > 0){
                 $p_login = $this->db->get_where('tb_user',array('username' => $user, 'password => $pass'))->row();
@@ -37,12 +39,16 @@ class Asisten extends CI_Controller {
     
     public function v_beranda()
     {
-        $this->load->view('v_beranda');
+        $this->load->view('templates/header-admin');
+        $this->load->view('user/v_beranda');
+        $this->load->view('templates/footer');
     }
     
     public function v_home()
     {
-        $this->load->view('v_home');
+        $this->load->view('templates/header-user');
+        $this->load->view('user/v_home');
+        $this->load->view('templates/footer');
     }
 
     public function v_nilai_asisten()
@@ -51,8 +57,10 @@ class Asisten extends CI_Controller {
         $this->load->model('asisten_model');
         $this->load->helper('url');
         $data= $this->asisten_model->get_nilai_asisten();  
-	   $data = array('result' => $data);        
-	   $this->load->view('v_nilai_asisten', $data); 
+        $data = array('result' => $data);
+        $this->load->view('templates/header');        
+        $this->load->view('admin/v_nilai_asisten', $data);
+        $this->load->view('templates/footer'); 
     }
    
     public function v_data_asisten()
@@ -62,14 +70,15 @@ class Asisten extends CI_Controller {
         $this->load->helper('url');
         $data = $this->asisten_model->get_data_asisten();  
         $data = array('result' => $data);
-        $this->load->view('v_data_asisten', $data);  
+        $this->load->view('templates/header');
+        $this->load->view('v_data_asisten', $data);
+        $this->load->view('templates/footer');  
     }
 
     public function edit_data_asisten()
     {
         $this->load->model("asisten_model");
 
-        // print_r($data);
         $this->asisten_model->update_data_asisten();
 
         redirect('asisten/v_data_asisten');
@@ -102,8 +111,10 @@ class Asisten extends CI_Controller {
         $this->load->model('asisten_model');
         $this->load->helper('url');
         $data = $this->asisten_model->get_kriteria();   
-	$data = array('result' => $data);
-        $this->load->view('v_kriteria', $data);   
+        $data = array('result' => $data);
+        $this->load->view('templates/header');
+        $this->load->view('admin/v_kriteria', $data);
+        $this->load->view('templates/footer');   
     }
 
     public function insert_data_asisten()
@@ -138,7 +149,7 @@ class Asisten extends CI_Controller {
     {
         $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
-        // var_dump ($id);
+        
         
         if ($id)
         {
@@ -156,7 +167,6 @@ class Asisten extends CI_Controller {
         $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
         $data['asisten'] = $this->asisten_model->ambil_data_asisten($id);
-        //print_r($data['asisten']);
         $this->load->view('edit_data_asisten', $data);
     }
 
@@ -194,13 +204,13 @@ class Asisten extends CI_Controller {
     {
         $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
-        // var_dump ($id);
+       
         
         if ($id)
         {
             $this->asisten_model->delete_nilai_asisten($id);
             redirect('asisten/v_nilai_asisten');
-            // $this->load->view('v_data_asisten', $data);
+            
         }
         else{
             redirect('asisten/v_nilai_asisten');
@@ -212,18 +222,14 @@ class Asisten extends CI_Controller {
         $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
         $data['asisten'] = $this->asisten_model->ambil_nilai_asisten($id);
-        //print_r($data['asisten']);
         $this->load->view('edit_nilai_asisten', $data);
     }
 
     public function edit_nilai_asisten()
     {
         $this->load->model("asisten_model");
-
         $id = $this->uri->segment(3);
-        // print_r($data);
         $this->asisten_model->update_nilai_asisten($data, $id);
-
         redirect('asisten/v_nilai_asisten');
     }
     
@@ -251,16 +257,18 @@ class Asisten extends CI_Controller {
 		}
 
         }
+        $this->load->view('templates/header');
+        $this->load->view('user/v_hasil_perhitungan', $data);
+        $this->load->view('templates/footer');
         
-        $this->load->view('v_hasil_perhitungan', $data);
     }
     
     public function v_ranking()
     {
         $this->load->model('asisten_model');
-	$data['kriteria'] = $this->asisten_model->get_kriteria();
-        $data['nilaimax'] =  $this->asisten_model->getMax();
-        $data['matkul'] = $this->asisten_model->nilai();
+	    $data['kriteria'] = $this->asisten_model->get_kriteria();
+        $data['nilaimax'] = $this->asisten_model->getMax();
+        $data['matkul']   = $this->asisten_model->nilai();
         
         foreach ($data['matkul'] as $key => $val)
         {
@@ -302,9 +310,11 @@ class Asisten extends CI_Controller {
         }
         
 	
-	$data['akhir']= $this->array_msort($data['matkul'], array('hasil'=>SORT_DESC));
+	    $data['akhir']= $this->array_msort($data['matkul'], array('hasil'=>SORT_DESC));
 
-        $this->load->view('v_ranking',$data);
+        $this->load->view('templates/header');
+        $this->load->view('user/v_ranking',$data);
+        $this->load->view('templates/footer');
     }
     
     function array_msort($array, $cols)

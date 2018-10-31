@@ -1,10 +1,15 @@
-<html>
-	<head>
-		<title>Dashboard</title>
-		<link rel = "stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
-	</head>
-  <body>
-     <div class="container">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport">
+    <title>
+      
+    </title>
+    <link rel = "stylesheet" href="<?php echo base_url();?>assets/bootstrap/css/bootstrap.min.css">
+    <link rel = "stylesheet" href="<?php echo base_url();?>assets/css/style.css">
+  </head>
+
+<body>
+<div class="container">
         <div id="header">   
             <nav class="navbar navbar-default">
 
@@ -32,24 +37,3 @@
            
         </div>
     </div>
-         
-    <h1>Selamat Datang di Dashboard Admin</h1>
-    
-      
-      
-      
-      
-    
-      
-      <nav class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-          <p>Copyright &copy; <?= date('Y'); ?></p>
-        </div>
-    </nav>
-
-  
-
-
-
-      </body>
-     </html>
