@@ -3,13 +3,16 @@
 class Asisten extends CI_Controller {
     public function __construct() 
     {
-        parent::__construct();  
-    
+        parent::__construct();
+        $this->load->helper('url');
+        $this->load->library('form_validation');  
+        $this->load->model("asisten_model");  
     }
 
     public function index()
 	{
-        $this->load->view('templates/header');
+        $data['title'] = "Login";
+        $this->load->view('templates/header', $data);
         $this->load->view('login');
         $this->load->view('templates/footer');
 	}
@@ -31,7 +34,12 @@ class Asisten extends CI_Controller {
                 }
             }else
             {
-            redirect(base_url());      
+                $data1['title'] = "Login";
+                $data['error'] ="Invalid Username or Password";
+                $this->load->view('templates/header', $data1);
+                $this->load->view('login', $data);
+                $this->load->view('templates/footer');
+
             }                       
         }
     }
@@ -39,46 +47,49 @@ class Asisten extends CI_Controller {
     
     public function v_beranda()
     {
-        $this->load->view('templates/header-admin');
+        $data['title'] = "Beranda | Admin";
+        $this->load->view('templates/header-admin', $data);
         $this->load->view('user/v_beranda');
         $this->load->view('templates/footer');
     }
     
     public function v_home()
     {
-        $this->load->view('templates/header-user');
+        $data['title'] = "Beranda | Penerimaan Asisten";
+        $this->load->view('templates/header-user', $data);
         $this->load->view('user/v_home');
         $this->load->view('templates/footer');
     }
 
     public function v_nilai_asisten()
     {
+        $data1['title'] = "Nilai Asisten | Penerimaan Asisten";
         $data   = array();
-        $this->load->model('asisten_model');
-        $this->load->helper('url');
-        $data= $this->asisten_model->get_nilai_asisten();  
-        $data = array('result' => $data);
-        $this->load->view('templates/header');        
+        $data   = $this->asisten_model->get_nilai_asisten();  
+        $data   = array('result' => $data);
+        $this->load->view('templates/header-admin', $data1);        
         $this->load->view('admin/v_nilai_asisten', $data);
         $this->load->view('templates/footer'); 
     }
    
     public function v_data_asisten()
     {
+        $data1['title'] = "Data Calon Asisten | Penerimaan Asisten";
         $data   = array();
         $this->load->model('asisten_model');
         $this->load->helper('url');
-        $data = $this->asisten_model->get_data_asisten();  
+        $data = $this->asisten_model->get_data_asisten();
+        if ($data > 0){  
         $data = array('result' => $data);
-        $this->load->view('templates/header');
-        $this->load->view('v_data_asisten', $data);
+        }
+        $this->load->view('templates/header-admin', $data1);
+        $this->load->view('admin/v_data_asisten', $data);
         $this->load->view('templates/footer');  
     }
 
     public function edit_data_asisten()
     {
-        $this->load->model("asisten_model");
-
+        $data['title'] = " Update Nilai Asisten | Penerimaan Asisten";
         $this->asisten_model->update_data_asisten();
 
         redirect('asisten/v_data_asisten');
@@ -86,40 +97,44 @@ class Asisten extends CI_Controller {
 
     public function form_nilai_asisten()
     {
-		$this->load->model('asisten_model');
+		$data['title'] = "Form Nilai Asisten | Penerimaan Asisten";
 		$ass = $this->asisten_model->get_data_asisten();
 		$ass = array('ass' => $ass);
         $action = $this->input->post('tambahnilai');
         if($action == 'Tambah')
         {
-            $this->load->view('form_nilai_asisten',$ass);
+            $this->load->view('templates/header');
+            $this->load->view('admin/form_nilai_asisten',$ass);
+            $this->load->view('templates/footer');
         }    
     }
 
     public function form_data_asisten()
     {
+        $data['title'] = "Form Nilai Asisten | Penerimaan Asisten";
         $action = $this->input->post('tambahdata');
         if($action == 'Tambah')
         {
-            $this->load->view('form_data_asisten');
+            $this->load->view('templates/header', $data);
+            $this->load->view('admin/form_data_asisten');
+            $this->load->view('templates/footer');
         } 
     }
 
     public function v_kriteria()
     {
+        $data1['title'] = "Kriteria | Admin";
         $data   = array();
-        $this->load->model('asisten_model');
-        $this->load->helper('url');
         $data = $this->asisten_model->get_kriteria();   
         $data = array('result' => $data);
-        $this->load->view('templates/header');
+        $this->load->view('templates/header-admin', $data1);
         $this->load->view('admin/v_kriteria', $data);
         $this->load->view('templates/footer');   
     }
 
     public function insert_data_asisten()
     {
-        $this->load->library('form_validation');
+        
         $this->form_validation->set_rules("nama", "Nama", 'required|alpha');
         $this->form_validation->set_rules("npm", "NPM", 'required|alpha_numeric');
         $this->form_validation->set_rules("jurusan", "Jurusan", 'required|alpha');
@@ -128,7 +143,7 @@ class Asisten extends CI_Controller {
         if($this->form_validation->run()==TRUE)
         {
             //true
-            $this->load->model("asisten_model");
+            
             $data = array(
                 "nama"          =>$this->input->post("nama"),
                 "npm"           =>$this->input->post("npm"),
@@ -136,7 +151,8 @@ class Asisten extends CI_Controller {
                 "ipk"           =>$this->input->post("ipk")
             );
             $this->db->set($data);
-            $this->asisten_model->insert_data_asisten();
+            $this->asisten_model->insert_data_asisten($data);
+            
             redirect(site_url("asisten/v_data_asisten"));
         }
         else
@@ -155,7 +171,7 @@ class Asisten extends CI_Controller {
         {
             $this->asisten_model->delete_data_asisten($id);
             redirect('asisten/v_data_asisten');
-            // $this->load->view('v_data_asisten', $data);
+            
         }
         else{
             redirect('asisten/v_data_asisten');
@@ -164,10 +180,11 @@ class Asisten extends CI_Controller {
 
     public function update_data_asisten()
     {
-        $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
         $data['asisten'] = $this->asisten_model->ambil_data_asisten($id);
-        $this->load->view('edit_data_asisten', $data);
+        $this->load->view('templates/header-admin');
+        $this->load->view('admin/edit_data_asisten', $data);
+        $this->load->view('templates/footer');
     }
 
     public function insert_nilai_asisten()
@@ -191,7 +208,7 @@ class Asisten extends CI_Controller {
                 "prak_2"            =>$this->input->post("prak_2")
             );
             $this->db->set($data);
-            $this->asisten_model->insert_nilai_asisten();
+            $this->asisten_model->insert_nilai_asisten($data);
             redirect(site_url("asisten/v_nilai_asisten"));
         }
         else
@@ -202,7 +219,7 @@ class Asisten extends CI_Controller {
 
     public function delete_nilai_asisten()
     {
-        $this->load->model("asisten_model");
+        
         $id = $this->uri->segment(3);
        
         
@@ -222,7 +239,9 @@ class Asisten extends CI_Controller {
         $this->load->model("asisten_model");
         $id = $this->uri->segment(3);
         $data['asisten'] = $this->asisten_model->ambil_nilai_asisten($id);
-        $this->load->view('edit_nilai_asisten', $data);
+        $this->load->view('templates/header');
+        $this->load->view('admin/edit_nilai_asisten', $data);
+        $this->load->view('templates/footer');
     }
 
     public function edit_nilai_asisten()
@@ -235,11 +254,9 @@ class Asisten extends CI_Controller {
     
     public function v_hasil_perhitungan()
     {
+        $data1['title'] = "Hasil Perhitungan";
         $data = array();
-        $this->load->model('asisten_model');
         $data['result'] = $this->asisten_model->get_tabel_evaluasi();        
-        
-
         $data['nilaimax'] =  $this->asisten_model->getMax();
         $data['matkul'] = $this->asisten_model->nilai();
         
@@ -257,7 +274,7 @@ class Asisten extends CI_Controller {
 		}
 
         }
-        $this->load->view('templates/header');
+        $this->load->view('templates/header-user', $data1);
         $this->load->view('user/v_hasil_perhitungan', $data);
         $this->load->view('templates/footer');
         
@@ -265,7 +282,7 @@ class Asisten extends CI_Controller {
     
     public function v_ranking()
     {
-        $this->load->model('asisten_model');
+        $data1['title'] = "Ranking";
 	    $data['kriteria'] = $this->asisten_model->get_kriteria();
         $data['nilaimax'] = $this->asisten_model->getMax();
         $data['matkul']   = $this->asisten_model->nilai();
@@ -312,7 +329,7 @@ class Asisten extends CI_Controller {
 	
 	    $data['akhir']= $this->array_msort($data['matkul'], array('hasil'=>SORT_DESC));
 
-        $this->load->view('templates/header');
+        $this->load->view('templates/header-user',$data1);
         $this->load->view('user/v_ranking',$data);
         $this->load->view('templates/footer');
     }

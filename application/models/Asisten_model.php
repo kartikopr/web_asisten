@@ -34,7 +34,6 @@ class Asisten_model extends CI_Model {
   
     }
 
-    
     public function insert_data_asisten($data)
     {
         $this->db->insert("tb_alternatif", $data);
@@ -67,8 +66,7 @@ class Asisten_model extends CI_Model {
         { 
             return NULL;
         }
-        // var_dump($data);
-        // return $data;
+        
     }
     public function update_data_asisten()
     {
@@ -132,10 +130,9 @@ class Asisten_model extends CI_Model {
     {
         $this->db->select('*');
         $this->db->from('tb_nilai');
-	$this->db->join('tb_alternatif', 'tb_alternatif.id_alternatif = tb_nilai.id_alternatif');
+	    $this->db->join('tb_alternatif', 'tb_alternatif.id_alternatif = tb_nilai.id_alternatif');
         $query = $this->db->get();
         return $query->result_array();
-  
     }
     
     public function getMax()
@@ -150,7 +147,7 @@ class Asisten_model extends CI_Model {
         
 	return $nilai;
         
-}
+    }
     
         
 }
